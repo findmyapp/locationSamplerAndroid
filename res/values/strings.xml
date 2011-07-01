@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Register Rooms</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="ssid">Register Rooms</string>
+    <string name="populateLocationData">Populate Data</string>
+    <string name="getRoom">Send Room</string>
+</resources>
