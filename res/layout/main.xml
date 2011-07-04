@@ -22,7 +22,8 @@
 			android:layout_height="wrap_content" 
 			android:layout_width="match_parent"
 			android:text="Room name" 
-			android:inputType="text"></EditText>		
+			android:inputType="text"></EditText>
+		
 		<EditText android:id="@+id/bssid" 
 			android:layout_height="wrap_content" 
 			android:layout_width="match_parent"
@@ -42,5 +43,10 @@
 						android:id="@+id/getRoomButton"  />
 			</TableRow>
 		</TableLayout>
+		<ProgressBar android:id="@+id/progressbar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         style="@android:style/Widget.ProgressBar.Small"
+         android:layout_marginRight="5dp" />
 		</LinearLayout>
 </LinearLayout>

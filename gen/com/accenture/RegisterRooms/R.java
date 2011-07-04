@@ -18,6 +18,7 @@ public final class R {
         public static final int bssid=0x7f050001;
         public static final int getRoomButton=0x7f050003;
         public static final int populateLocationButton=0x7f050002;
+        public static final int progressbar=0x7f050004;
         public static final int roomName=0x7f050000;
     }
     public static final class layout {

@@ -18,11 +18,14 @@
 			android:textColor="#000000"
 			android:layout_marginBottom="20dip"
 			android:textSize="24.5sp" />
+	
 		<EditText android:id="@+id/roomName" 
 			android:layout_height="wrap_content" 
 			android:layout_width="match_parent"
 			android:text="Room name" 
 			android:inputType="text"/>
+
+			
 		<EditText android:id="@+id/bssid" 
 			android:layout_height="wrap_content" 
 			android:layout_width="match_parent"
@@ -40,5 +43,10 @@
 						android:id="@+id/getRoomButton"  />
 			</TableRow>
 		</TableLayout>
+		<ProgressBar android:id="@+id/progressbar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         style="@android:style/Widget.ProgressBar.Small"
+         android:layout_marginRight="5dp" />
 	</LinearLayout>
 </LinearLayout>
