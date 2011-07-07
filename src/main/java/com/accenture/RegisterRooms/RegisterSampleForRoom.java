@@ -5,16 +5,16 @@ import java.util.List;
 import android.net.wifi.ScanResult;
 
 public class RegisterSampleForRoom {
-	private String roomName;
+	private String locationName;
 	private int id;
-	private int roomId;
+	private int locationId;
 	private Signal[] signalList;
 	
 
 	public RegisterSampleForRoom(String roomName, Signal[] signalArray) {
 		id = -1;
-		roomId = -1;
-		this.roomName = roomName;
+		locationId = -1;
+		this.locationName = roomName;
 		signalList = signalArray;
 	}
 
@@ -22,12 +22,12 @@ public class RegisterSampleForRoom {
 		return id;
 	}
 
-	public int getRoomId() {
-		return roomId;
+	public int getLocationId() {
+		return locationId;
 	}
 
-	public String getRoomName() {
-		return roomName;
+	public String getLocationName() {
+		return locationName;
 	}
 	
 	public Signal[] getSignalList() {

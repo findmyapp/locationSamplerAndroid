@@ -8,6 +8,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * LocationHandler uses the locationManager class to set how often the application
+ * should scan for WIFI information.
+ * 
+ * The manager can also retrieve GPS / Speed / Navigation information if needed
+ * for future development (...)
+ * 
+ * @author audun.sorheim
+ *
+ */
+
 public class LocationHandler {
 	
 	private Location currentLocation;
@@ -71,4 +82,5 @@ public void makeUseOfNewLocation(Location location) {
 	}
 
 }
+
 }

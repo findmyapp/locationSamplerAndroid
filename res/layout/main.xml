@@ -18,11 +18,19 @@
 			android:layout_gravity="center" 
 			android:layout_marginBottom="20dip"
 			android:textSize="24.5sp" />
-		<EditText android:id="@+id/roomName" 
+			
+		<Spinner
+			android:id="@+id/locationSpinner"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style=""
+			/>	
+			
+		<EditText android:id="@+id/roomName"
 			android:layout_height="wrap_content" 
 			android:layout_width="match_parent"
-			android:text="Room name" 
-			android:inputType="text"></EditText>
+			android:text="@string/enterNewLocation" 
+			android:inputType="text" />
 		
 		<EditText android:id="@+id/bssid" 
 			android:layout_height="wrap_content" 
@@ -43,6 +51,13 @@
 						android:id="@+id/getRoomButton"  />
 			</TableRow>
 		</TableLayout>
+		
+		<Button 
+			android:text="@string/whereAmI"
+			android:id="@+id/getWhereAmIButton"
+			android:layout_height="wrap_content" 
+			android:layout_width="match_parent"/>
+
 		<ProgressBar android:id="@+id/progressbar"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Register Rooms</string>
-    <string name="longitude">Longitude</string>
-    <string name="latitude">Latitude</string>
-    <string name="ssid">Register Rooms</string>
-    <string name="populateLocationData">Populate Data</string>
-    <string name="getRoom">Send Room</string>
+    <string name="app_name">Lokasjonsregistrering!</string>
+    <string name="ssid">Lokasjonsregistrering!</string>
+    <string name="populateLocationData">Wifi Scan</string>
+    <string name="getRoom">Registrer punkt</string>
+    <string name="enterNewLocation">Opprett ny lokasjon ?</string>
+    <string name="whereAmI">Hvor er jeg nå ?</string>
 </resources>
