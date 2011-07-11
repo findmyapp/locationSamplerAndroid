@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,12 +30,13 @@ public class RegisterRoomsActivity extends Activity {
 
 	private String TAG = "RegisterRoomActivity";
 	private Button populatePositionDataButton, sendRoomButton,
-			getWhereIAmButton;;
+			getWhereIAmButton;
+	private ImageButton addNewLocationButton;
 	private TextView ssidTextView;
 	private EditText roomNameEditText;
 	private ScanResult scanResult;
 	private WifiPositionHandler wifiPositionHandler;
-	private List<ScanResult> scanList;
+	private List<ScanResult> scanList, oldList;
 	private RestClient restClient;
 	private LocationHandler locationHandler;
 	private ArrayAdapter<CharSequence> adapter;
@@ -46,12 +48,11 @@ public class RegisterRoomsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		scanList = null;
 		restClient = new RestClient();
 		locationHandler = new LocationHandler(this);
 
 		// Init GUI
-		roomNameEditText = (EditText) findViewById(R.id.roomName);
+		addNewLocationButton = (ImageButton) findViewById(R.id.addButton);
 		ssidTextView = (TextView) findViewById(R.id.bssid);
 		populatePositionDataButton = (Button) findViewById(R.id.populateLocationButton);
 		sendRoomButton = (Button) findViewById(R.id.getRoomButton);
@@ -124,8 +125,30 @@ public class RegisterRoomsActivity extends Activity {
 				checkWhereIAm();
 			}
 		});
-	}
+		
+		addNewLocationButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(RegisterRoomsActivity.this);
+				final EditText input = new EditText(RegisterRoomsActivity.this);
+				alert.setView(input);
+				alert.setMessage("Navn på ny lokasjon");
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						String value = input.getText().toString().trim();
+						adapter.add(value);
+					}
+				});
 
+				alert.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								dialog.cancel();
+							}
+						});
+				alert.show();				
+			}
+		});
+	}
 
 	/**
 	 * Figures out which location you are at, and toasts it to the screen.
@@ -146,36 +169,38 @@ public class RegisterRoomsActivity extends Activity {
 	 * select which location name to be used
 	 */
 	public void sendSampleToServer() {
-		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-		alt_bld.setMessage("Hvilket lokasjonsnavn vil du bruke?")
-				.setCancelable(false)
-				.setPositiveButton("Opprett nytt",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								if (roomNameEditText.getText().toString() == ""
-										|| roomNameEditText.getText()
-												.toString() == "Opprett ny lokasjon") {
-									printToScreen("Skriv inn romnavn");
-								} else {
-									String sample = getSample(roomNameEditText
-											.getText().toString());
-									if (sample != null) {
-										boolean sent = restClient
-												.sendCurrentLocation(sample);
-										if (sent == true) {
-											printToScreen("Punktet ble registrert");
-										} else {
-											printToScreen("Punktet ble ikke registrert");
-										}
-									} else {
-										printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
-									}
-								}
-							}
-						})
-				.setNegativeButton("Fra liste",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
+//		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
+//		alt_bld.setMessage("Hvilket lokasjonsnavn vil du bruke?")
+//				.setCancelable(false)
+//				.setPositiveButton("Opprett nytt",
+//						new DialogInterface.OnClickListener() {
+//							public void onClick(DialogInterface dialog, int id) {
+//								if (roomNameEditText.getText().toString() == ""
+//										|| roomNameEditText.getText()
+//												.toString() == "Opprett ny lokasjon") {
+//									printToScreen("Skriv inn romnavn");
+//
+//								} else {
+//									String sample = getSample(roomNameEditText
+//											.getText().toString());
+//									if (sample != null) {
+//
+//										boolean sent = restClient
+//												.sendCurrentLocation(sample);
+//										if (sent == true) {
+//											printToScreen("Punktet ble registrert");
+//										} else {
+//											printToScreen("Punktet ble ikke registrert");
+//										}
+//									} else {
+//										printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
+//									}
+//								}
+//							}
+//						})
+//				.setNegativeButton("Fra liste",
+//						new DialogInterface.OnClickListener() {
+//							public void onClick(DialogInterface dialog, int id) {
 								String locationName = spinner.getSelectedItem()
 										.toString();
 								String sample = getSample(locationName);
@@ -191,11 +216,11 @@ public class RegisterRoomsActivity extends Activity {
 									printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
 								}
 							}
-						});
-		AlertDialog alert = alt_bld.create();
-		alert.setTitle("Registrering av punkt");
-		alert.show();
-	}
+//						});
+//		AlertDialog alert = alt_bld.create();
+//		alert.setTitle("Registrering av punkt");
+//		alert.show();
+//	}
 
 	/**
 	 * Populates the spinner with locations
@@ -235,27 +260,28 @@ public class RegisterRoomsActivity extends Activity {
 	 */
 	public void updateBSSID() {
 		if (wifiPositionHandler.getScanList() == null) {
-			Log.e("SCANRESULTS", "There are no scan results");
+			printToScreen("Der er ingen scan resultater. Scanner..");
 			wifiPositionHandler.scanForSSID();
 		} else {
 			scanList = wifiPositionHandler.getScanList();
-			Log.e("SCANRESULTS", "Oh yeah");
-
-			scanResult = scanList.get(0);
-
-			Log.e("NetworkAndroidActivity", scanResult.BSSID + " "
-					+ scanResult.level);
-			ssidTextView.setText(scanResult.BSSID);
+			if (oldList != scanList) {
+				oldList = scanList;
+				ssidTextView.setText("Fant ny wifi info");
+			}
+			else {
+				ssidTextView.setText("Ikke funnet ny info enda");
+			}
 		}
 
 	}
 
 	/**
 	 * Toasts strings to the screen
-	 * @param text string to be toasted
+	 * 
+	 * @param text
+	 *            string to be toasted
 	 */
 	public void printToScreen(String text) {
 		Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
 	}
-	
 }

@@ -3,7 +3,7 @@
     <string name="app_name">Lokasjonsregistrering!</string>
     <string name="ssid">Lokasjonsregistrering!</string>
     <string name="populateLocationData">Wifi Scan</string>
-    <string name="getRoom">Registrer punkt</string>
+    <string name="getRoom">Send</string>
     <string name="enterNewLocation">Opprett ny lokasjon ?</string>
     <string name="whereAmI">Hvor er jeg nå ?</string>
 </resources>
