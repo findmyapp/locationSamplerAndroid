@@ -30,9 +30,9 @@ import com.google.gson.JsonParser;
 
 public class RestClient {
 
-	private String postSampleUrl = "http://findmyapp.net/findmyapp/location/sample"; // localhost																				// emulator
-	private String getAllLocationsURL = "http://findmyapp.net/findmyapp/location/all";
-	private String getWhereIAmURL = "http://findmyapp.net/findmyapp/location";
+	private String postSampleUrl = "http://findmyapp.net/findmyapp/locations/sample";
+	private String getAllLocationsURL = "http://findmyapp.net/findmyapp/locations";
+	private String getWhereIAmURL = "http://findmyapp.net/findmyapp/locations";
 	private String TAG = "RESTCLIENT";
 	private boolean sent;
 	private Gson gson;
@@ -67,17 +67,8 @@ public class RestClient {
 
 			JsonParser parser = new JsonParser();
 			JsonElement jsonElement = parser.parse(reader);
+			locations = gson.fromJson(jsonElement, Location[].class);
 
-			Log.e(getClass().getSimpleName() + "getAllLocations",
-					"Array length: "
-							+ gson.fromJson(
-									jsonElement.getAsJsonObject().get(
-											"locationList"), Location[].class).length);
-			locations = new Location[gson.fromJson(jsonElement
-					.getAsJsonObject().get("locationList"), Location[].class).length];
-			locations = gson.fromJson(
-					jsonElement.getAsJsonObject().get("locationList"),
-					Location[].class);
 
 			if (locations == null) {
 				Log.e(getClass().getSimpleName() + "getAllLocations",
@@ -109,12 +100,15 @@ public class RestClient {
 		Gson gson = new Gson();
 		if (source != null) {
 			Log.e(getClass().getSimpleName(), "source is not null :) ");
+			Log.e(TAG, "egewgwege");
 			Reader reader = new InputStreamReader(source);
 
 			JsonParser parser = new JsonParser();
 			JsonElement jsonElement = parser.parse(reader);
-			location = gson.fromJson(jsonElement.getAsJsonObject().get("room"),
-					Location.class);
+			Boolean test = (jsonElement == null);
+			Log.e(TAG, test.toString());
+			
+			location = gson.fromJson(jsonElement, Location.class);
 
 			if (location == null) {
 				Log.e(getClass().getSimpleName(),
@@ -127,11 +121,6 @@ public class RestClient {
 
 		return location;
 	}
-
-//	public Room deserializeRoom(String jsonRoom) {
-//		Room room = gson.fromJson(jsonRoom, Room.class);
-//		return room;
-//	}
 
 	/**
 	 * Stream used for posting samples
@@ -160,6 +149,7 @@ public class RestClient {
 			if (statusCode != HttpStatus.SC_OK) {
 				Log.e(getClass().getSimpleName() + " , gamlemetoden!", "Error "
 						+ statusCode + " for URL " + postSampleUrl);
+				sent = false;
 				return null;
 			} else {
 				Log.e("RESTCLIENT", "ok");

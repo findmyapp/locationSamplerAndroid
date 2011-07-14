@@ -1,8 +1,13 @@
 package com.accenture.RegisterRooms;
 
+/**
+ * @author Cecilie Haugstvedt
+ * @author Audun Sorheim
+ */
 public class Location {
-	private String locationName;
+
 	private int locationId;
+	private String locationName;
 	
 	public Location() {}
 	
@@ -10,7 +15,7 @@ public class Location {
 		this.locationId = locationId;
 	}
 
-	public Location(String locationName, int locationId) {
+	public Location(int locationId, String locationName) {
 		this.locationName = locationName;
 		this.locationId = locationId;
 	}
@@ -26,5 +31,5 @@ public class Location {
 	public void setLocationId(int locationId) {
 		this.locationId = locationId;
 	}
-
 }
+	
