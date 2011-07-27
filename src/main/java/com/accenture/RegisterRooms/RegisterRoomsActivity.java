@@ -33,8 +33,6 @@ public class RegisterRoomsActivity extends Activity {
 			getWhereIAmButton;
 	private ImageButton addNewLocationButton;
 	private TextView ssidTextView;
-	private EditText roomNameEditText;
-	private ScanResult scanResult;
 	private WifiPositionHandler wifiPositionHandler;
 	private List<ScanResult> scanList, oldList;
 	private RestClient restClient;
@@ -42,6 +40,8 @@ public class RegisterRoomsActivity extends Activity {
 	private ArrayAdapter<CharSequence> adapter;
 	private Spinner spinner;
 	private RegisterRoomsActivity registerRoomsActivity = this;
+	private Spinner terrorSpinner;
+	private ArrayAdapter<CharSequence> spinnerAdapter;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -86,6 +86,7 @@ public class RegisterRoomsActivity extends Activity {
 			alert.show();
 		} else {
 			initiateComponents();
+			Log.e("initcomponents", "Testing");
 		}
 	}
 
@@ -96,7 +97,8 @@ public class RegisterRoomsActivity extends Activity {
 		wifiPositionHandler.scanForSSID();
 
 		// Getting locations from server
-		Location[] locations = restClient.getAllLocations();
+		Location[] locations = null;
+		locations = restClient.getAllLocations();
 		if (locations == null) {
 			printToScreen("Fikk ikke lokasjoner fra serveren");
 			Log.e("Locationstest", "Kunne ikke hente lokasjoner fra server");
@@ -125,27 +127,32 @@ public class RegisterRoomsActivity extends Activity {
 				checkWhereIAm();
 			}
 		});
-		
+
 		addNewLocationButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				final AlertDialog.Builder alert = new AlertDialog.Builder(RegisterRoomsActivity.this);
+				final AlertDialog.Builder alert = new AlertDialog.Builder(
+						RegisterRoomsActivity.this);
 				final EditText input = new EditText(RegisterRoomsActivity.this);
 				alert.setView(input);
 				alert.setMessage("Navn på ny lokasjon");
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						String value = input.getText().toString().trim();
-						adapter.add(value);
-					}
-				});
+				alert.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								String value = input.getText().toString()
+										.trim();
+								adapter.add(value);
+							}
+						});
 
 				alert.setNegativeButton("Cancel",
 						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
 								dialog.cancel();
 							}
 						});
-				alert.show();				
+				alert.show();
 			}
 		});
 	}
@@ -163,64 +170,38 @@ public class RegisterRoomsActivity extends Activity {
 			printToScreen("No room found");
 		}
 	}
+	
+	public void populateTerrorSpinner(List<ScanResult> scanList2) {
+		spinnerAdapter =
+			  new ArrayAdapter <CharSequence> (this, android.R.layout.simple_spinner_item );
+			spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		
+			for (ScanResult result : scanList2) {
+				spinnerAdapter.add(result.BSSID + ":" + result.level);
+			}
+			
+		terrorSpinner = (Spinner) findViewById(R.id.terrorSpinner);
+		terrorSpinner.setAdapter(spinnerAdapter);
+	}
 
 	/**
 	 * Sends a sample to the server. Pops up a alert dialog which lets the user
 	 * select which location name to be used
 	 */
 	public void sendSampleToServer() {
-//		AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
-//		alt_bld.setMessage("Hvilket lokasjonsnavn vil du bruke?")
-//				.setCancelable(false)
-//				.setPositiveButton("Opprett nytt",
-//						new DialogInterface.OnClickListener() {
-//							public void onClick(DialogInterface dialog, int id) {
-//								if (roomNameEditText.getText().toString() == ""
-//										|| roomNameEditText.getText()
-//												.toString() == "Opprett ny lokasjon") {
-//									printToScreen("Skriv inn romnavn");
-//
-//								} else {
-//									String sample = getSample(roomNameEditText
-//											.getText().toString());
-//									if (sample != null) {
-//
-//										boolean sent = restClient
-//												.sendCurrentLocation(sample);
-//										if (sent == true) {
-//											printToScreen("Punktet ble registrert");
-//										} else {
-//											printToScreen("Punktet ble ikke registrert");
-//										}
-//									} else {
-//										printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
-//									}
-//								}
-//							}
-//						})
-//				.setNegativeButton("Fra liste",
-//						new DialogInterface.OnClickListener() {
-//							public void onClick(DialogInterface dialog, int id) {
-								String locationName = spinner.getSelectedItem()
-										.toString();
-								String sample = getSample(locationName);
-								if (sample != null) {
-									boolean sent = restClient
-											.sendCurrentLocation(sample);
-									if (sent == true) {
-										printToScreen("Punktet ble registrert");
-									} else {
-										printToScreen("Punktet ble ikke registrert");
-									}
-								} else {
-									printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
-								}
-							}
-//						});
-//		AlertDialog alert = alt_bld.create();
-//		alert.setTitle("Registrering av punkt");
-//		alert.show();
-//	}
+		String locationName = spinner.getSelectedItem().toString();
+		String sample = getSample(locationName);
+		if (sample != null) {
+			boolean sent = restClient.sendCurrentLocation(sample);
+			if (sent == true) {
+				printToScreen("Punktet ble registrert");
+			} else {
+				printToScreen("Punktet ble ikke registrert");
+			}
+		} else {
+			printToScreen("Fant ingen sample å sende, prøv igjen en gang eller tre!");
+		}
+	}
 
 	/**
 	 * Populates the spinner with locations
@@ -234,7 +215,6 @@ public class RegisterRoomsActivity extends Activity {
 
 		for (Location loc : locations) {
 			adapter.add(loc.getlocationName());
-			Log.e("Testing location array", loc.getlocationName());
 		}
 
 		spinner = (Spinner) findViewById(R.id.locationSpinner);
@@ -264,11 +244,11 @@ public class RegisterRoomsActivity extends Activity {
 			wifiPositionHandler.scanForSSID();
 		} else {
 			scanList = wifiPositionHandler.getScanList();
+			populateTerrorSpinner(scanList);
 			if (oldList != scanList) {
 				oldList = scanList;
 				ssidTextView.setText("Fant ny wifi info");
-			}
-			else {
+			} else {
 				ssidTextView.setText("Ikke funnet ny info enda");
 			}
 		}

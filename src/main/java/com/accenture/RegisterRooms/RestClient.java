@@ -23,9 +23,9 @@ import com.google.gson.JsonParser;
 
 /**
  * Klient for å kommunisere med serveren
- * En del kodeduplisering, bør refaktoreres 
+ * 
  * @author audun.sorheim
- *
+ * 
  */
 
 public class RestClient {
@@ -43,8 +43,9 @@ public class RestClient {
 
 	/**
 	 * Sends the current location to the server
+	 * 
 	 * @param json
-	 * @return
+	 * @return true if the operation was successful, false if not
 	 */
 	public boolean sendCurrentLocation(String json) {
 		postSampleStream(json);
@@ -54,6 +55,7 @@ public class RestClient {
 
 	/**
 	 * Gets all stored locations from the server
+	 * 
 	 * @return
 	 */
 	public Location[] getAllLocations() {
@@ -69,7 +71,6 @@ public class RestClient {
 			JsonElement jsonElement = parser.parse(reader);
 			locations = gson.fromJson(jsonElement, Location[].class);
 
-
 			if (locations == null) {
 				Log.e(getClass().getSimpleName() + "getAllLocations",
 						"Cannot parse json to room :(");
@@ -77,37 +78,31 @@ public class RestClient {
 				Log.e(getClass().getSimpleName() + "getAllLocations",
 						"Json parse was successful");
 			}
-
 		} else {
 			Log.e(getClass().getSimpleName() + "getAllLocations",
 					"source is null :(");
 		}
-
 		return locations;
 	}
 
 	/**
 	 * Gets the location you are at
+	 * 
 	 * @param json
 	 * @return
 	 */
 	public Location getWhereIAm(String json) {
 
 		Location location = null;
-		// json = getSampleData(); //for testing
 		InputStream source = getWhereIAmStream(json);
 
 		Gson gson = new Gson();
 		if (source != null) {
 			Log.e(getClass().getSimpleName(), "source is not null :) ");
-			Log.e(TAG, "egewgwege");
 			Reader reader = new InputStreamReader(source);
 
 			JsonParser parser = new JsonParser();
 			JsonElement jsonElement = parser.parse(reader);
-			Boolean test = (jsonElement == null);
-			Log.e(TAG, test.toString());
-			
 			location = gson.fromJson(jsonElement, Location.class);
 
 			if (location == null) {
@@ -118,7 +113,6 @@ public class RestClient {
 		} else {
 			Log.e(getClass().getSimpleName(), "source is null :(");
 		}
-
 		return location;
 	}
 
@@ -136,7 +130,6 @@ public class RestClient {
 			request.setHeader("Accept", "application/json");
 			request.setHeader("Content-type", "application/json");
 		} catch (UnsupportedEncodingException e) {
-			Log.e(TAG, "Første catch");
 			Log.e(getClass().getSimpleName(),
 					"Could not create entity from string: " + json, e);
 			e.printStackTrace();
@@ -147,12 +140,11 @@ public class RestClient {
 			final int statusCode = getResponse.getStatusLine().getStatusCode();
 
 			if (statusCode != HttpStatus.SC_OK) {
-				Log.e(getClass().getSimpleName() + " , gamlemetoden!", "Error "
+				Log.e(getClass().getSimpleName(), "Error "
 						+ statusCode + " for URL " + postSampleUrl);
 				sent = false;
 				return null;
 			} else {
-				Log.e("RESTCLIENT", "ok");
 				sent = true;
 			}
 			HttpEntity getResponseEntity = getResponse.getEntity();
@@ -167,6 +159,7 @@ public class RestClient {
 
 	/**
 	 * Stream used to get all locations
+	 * 
 	 * @return
 	 */
 	public InputStream getAllLocationsStream() {
@@ -182,25 +175,25 @@ public class RestClient {
 			final int statusCode = getResponse.getStatusLine().getStatusCode();
 
 			if (statusCode != HttpStatus.SC_OK) {
-				Log.e(getClass().getSimpleName() + " , nyemetoden!", "Error "
+				Log.e(getClass().getSimpleName(), "Error "
 						+ statusCode + " for URL " + getAllLocationsURL);
 				return null;
 			} else {
-				Log.e("RESTCLIENT", "ok");
 				sent = true;
 			}
 			HttpEntity getResponseEntity = getResponse.getEntity();
 			return getResponseEntity.getContent();
 		} catch (IOException e) {
 			request.abort();
-			Log.e(getClass().getSimpleName(), "Error for URL " + getAllLocationsURL,
-					e);
+			Log.e(getClass().getSimpleName(), "Error for URL "
+					+ getAllLocationsURL, e);
 		}
 		return null;
 	}
 
 	/**
 	 * Stream used to get where you are
+	 * 
 	 * @param json
 	 * @return
 	 */
@@ -241,9 +234,6 @@ public class RestClient {
 			Log.e(getClass().getSimpleName(),
 					"Error for URL " + getWhereIAmURL, e);
 		}
-
 		return null;
-
 	}
-
 }

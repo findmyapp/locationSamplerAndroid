@@ -17,6 +17,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Position handler that scans and retrieves position related wifi information
+ * Sets wifi
  * 
  * @author audun.sorheim, cecilie haugstvedt
  * 

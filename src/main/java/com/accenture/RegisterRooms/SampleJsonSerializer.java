@@ -16,8 +16,6 @@ import com.google.gson.JsonSerializer;
 public class SampleJsonSerializer implements JsonSerializer<RegisterSampleForRoom> {
 	
 	
-    
-
 	@Override
 	public JsonElement serialize(RegisterSampleForRoom sample, Type type, JsonSerializationContext context) {
 		JsonObject object = new JsonObject();

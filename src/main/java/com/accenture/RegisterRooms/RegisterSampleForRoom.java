@@ -1,9 +1,5 @@
 package com.accenture.RegisterRooms;
 
-import java.util.List;
-
-import android.net.wifi.ScanResult;
-
 public class RegisterSampleForRoom {
 	private String locationName;
 	private int id;
