@@ -74,7 +74,7 @@ public class RegisterRoomsActivity extends Activity {
 		dialog = new Dialog(RegisterRoomsActivity.this);
 
 		dialog.setContentView(R.layout.dialoglayout);
-		dialog.setTitle("Custom Dialog");
+		dialog.setTitle("Login");
 
 		usernameEditText = (EditText) dialog
 				.findViewById(R.id.usernameedittext);
