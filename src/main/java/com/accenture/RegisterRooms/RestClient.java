@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.database.Cursor;
 import android.util.Base64;
 import android.util.Log;
 
@@ -35,13 +35,33 @@ public class RestClient {
 	private String getAllLocationsURL = "http://findmyapp.net/findmyapp/locations";
 	private String getWhereIAmURL = "http://findmyapp.net/findmyapp/locations";
 	private String TAG = "RESTCLIENT";
-	private boolean sent;
+	private String login = "";
+	private boolean sent = false;
 	private Gson gson;
-
-	public RestClient() {
-		sent = false;
+	
+	private static RestClient client;
+	// Singleton implementation
+	public static RestClient getInstance() {
+		if(client == null) {
+			client = new RestClient();
+		}
+		return client;
+	}
+	
+	private RestClient() { 
 	}
 
+	public void setCredentials(String username, String password) {
+		login = "Basic " + Base64.encodeToString((username+":"+password).getBytes(), Base64.NO_WRAP);
+	}
+
+	public boolean hasCredentials() {
+		if(login.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Sends the current location to the server
 	 * 
@@ -129,22 +149,34 @@ public class RestClient {
 			entity = new StringEntity(json);
 			request.setEntity(entity);
 			request.setHeader("Accept", "application/json");
-			request.setHeader("Content-type", "application/json");
-			Log.e(TAG, Base64.encodeToString("sampler:sempl0r".getBytes(), Base64.DEFAULT));
-			request.setHeader("Authorization", "Basic "+Base64.encodeToString("sampler:sempl0r".getBytes(), Base64.DEFAULT));
+			request.setHeader("Content-Type", "application/json");
+			
+			Log.e(TAG, login);
+			Log.e(TAG, "Equal" + login.equals("Basic c2FtcGxlcjpzZW1wbDBy"));
+			request.setHeader("Authorization", login);
+//			request.setHeader("Authorization", "Basic c2FtcGxlcjpzZW1wbDBy");
+			
+			Log.v("DEBUGH", request.getAllHeaders().length+"");
+			for (Header h : request.getAllHeaders()) {
+				Log.v("DEBUGH", h.getName() + " - " + h.getValue());
+			}
+			
+			
+		
 		} catch (UnsupportedEncodingException e) {
 			Log.e(getClass().getSimpleName(),
 					"Could not create entity from string: " + json, e);
 			e.printStackTrace();
 		}
 		try {
-
+			
 			HttpResponse getResponse = client.execute(request);
 			final int statusCode = getResponse.getStatusLine().getStatusCode();
-
+			
 			if (statusCode != HttpStatus.SC_OK) {
 				Log.e(getClass().getSimpleName(), "Error "
 						+ statusCode + " for URL " + postSampleUrl);
+				Log.e("DEBUG", getResponse.getEntity() + "");
 				sent = false;
 				return null;
 			} else {

@@ -6,10 +6,12 @@ import com.accenture.RegisterRooms.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -42,14 +44,21 @@ public class RegisterRoomsActivity extends Activity {
 	private RegisterRoomsActivity registerRoomsActivity = this;
 	private Spinner terrorSpinner;
 	private ArrayAdapter<CharSequence> spinnerAdapter;
+	private EditText usernameEditText, passwordEditText;
+	private Button loginButton;
+	private Dialog dialog;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		restClient = new RestClient();
-		locationHandler = new LocationHandler(this);
+
+		restClient = RestClient.getInstance();
+		
+		if (!restClient.hasCredentials()) {
+			loginDialog();
+		}
 
 		// Init GUI
 		addNewLocationButton = (ImageButton) findViewById(R.id.addButton);
@@ -58,9 +67,32 @@ public class RegisterRoomsActivity extends Activity {
 		sendRoomButton = (Button) findViewById(R.id.getRoomButton);
 		getWhereIAmButton = (Button) findViewById(R.id.getWhereAmIButton);
 
+	}
+
+	private void loginDialog() {
+		dialog = null;
+		dialog = new Dialog(RegisterRoomsActivity.this);
+
+		dialog.setContentView(R.layout.dialoglayout);
+		dialog.setTitle("Custom Dialog");
+
+		usernameEditText = (EditText) dialog
+				.findViewById(R.id.usernameedittext);
+		passwordEditText = (EditText) dialog
+				.findViewById(R.id.passwordedittext);
+		loginButton = (Button) dialog.findViewById(R.id.pinadgrett);
+		loginButton.setOnClickListener(loginButton_UpdateOnClickListener);
+
+		dialog.show();
+	}
+
+	private void doStuff() {
+
 		// Checks if wifi is enabled, and pops up an alertdialog if not, asking
 		// to enable it
-		wifiPositionHandler = new WifiPositionHandler(this);
+		locationHandler = new LocationHandler(this);
+		wifiPositionHandler = WifiPositionHandler.getInstance();
+		wifiPositionHandler.init(this);
 		boolean wifiEnabled = wifiPositionHandler.isWifiEnabled();
 		if (wifiEnabled != true) {
 			wifiPositionHandler.setWifiState(true);
@@ -89,6 +121,24 @@ public class RegisterRoomsActivity extends Activity {
 			Log.e("initcomponents", "Testing");
 		}
 	}
+
+	private Button.OnClickListener loginButton_UpdateOnClickListener = new Button.OnClickListener() {
+
+		@Override
+		public void onClick(View arg0) {
+			String username = usernameEditText.getText().toString();
+			//Log.e("Username ", username);
+			String password = passwordEditText.getText().toString();
+			// Log.e("Password ", password);
+			if (!username.equals("") && !password.equals("")) {
+				RestClient.getInstance().setCredentials(username, password);
+				dialog.dismiss();
+				doStuff();
+			} else {
+			}
+			
+		}
+	};
 
 	/**
 	 * Initiates activity components / states.
@@ -170,16 +220,17 @@ public class RegisterRoomsActivity extends Activity {
 			printToScreen("No room found");
 		}
 	}
-	
+
 	public void populateTerrorSpinner(List<ScanResult> scanList2) {
-		spinnerAdapter =
-			  new ArrayAdapter <CharSequence> (this, android.R.layout.simple_spinner_item );
-			spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
-			for (ScanResult result : scanList2) {
-				spinnerAdapter.add(result.BSSID + ":" + result.level);
-			}
-			
+		spinnerAdapter = new ArrayAdapter<CharSequence>(this,
+				android.R.layout.simple_spinner_item);
+		spinnerAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		for (ScanResult result : scanList2) {
+			spinnerAdapter.add(result.BSSID + ":" + result.level);
+		}
+
 		terrorSpinner = (Spinner) findViewById(R.id.terrorSpinner);
 		terrorSpinner.setAdapter(spinnerAdapter);
 	}

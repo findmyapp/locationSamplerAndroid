@@ -29,24 +29,37 @@ public class WifiPositionHandler {
 	private Activity registerRoomsActivity;
 	private List<ScanResult> scanList;
 	private RestClient restClient;
+	private boolean initiated = false;
+	private Intent temp;
 
-	public WifiPositionHandler(RegisterRoomsActivity a) {
+	private static WifiPositionHandler client;
+	// Singleton implementation
+	public static WifiPositionHandler getInstance() {
+		if(client == null) {
+			client = new WifiPositionHandler();
+		}
+		return client;
+	}
+	
+	public void init(RegisterRoomsActivity a) {
 		this.registerRoomsActivity = a;
+	}
+	
+	private WifiPositionHandler() { 
 		scanList = null;
-		restClient = new RestClient();
+		restClient = RestClient.getInstance();
 	}
 
 	// Scans for Wifi BSSIDs / Signal Strength
 	public void scanForSSID() {
-		IntentFilter i = new IntentFilter();
-		i.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-		registerRoomsActivity.registerReceiver(new BroadcastReceiver() {
-			public void onReceive(Context c, Intent i) {
-				WifiManager w = (WifiManager) c
-						.getSystemService(Context.WIFI_SERVICE);
-				scanList = w.getScanResults();
-			}
-		}, i);
+		Log.v("DEBUGDDDDDDDDDDDD", "CALLED SSID");
+		if(!initiated) {
+			IntentFilter i = new IntentFilter();
+			i.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+			
+			registerRoomsActivity.registerReceiver(new WifiReciever(), i);
+			initiated = true;
+		}
 	}
 
 	public List<ScanResult> getScanList() {
@@ -162,5 +175,16 @@ public class WifiPositionHandler {
 				.getSystemService(Context.WIFI_SERVICE);
 		manager.setWifiEnabled(state);
 	}
-
+	
+	
+	class WifiReciever extends BroadcastReceiver {
+		public void onReceive(Context c, Intent i) {
+			Log.v("DEBUGG2", i.getAction());
+			if(i.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+				WifiManager w = (WifiManager) c
+						.getSystemService(Context.WIFI_SERVICE);
+				scanList = w.getScanResults();
+			}
+		}
+	}
 }
