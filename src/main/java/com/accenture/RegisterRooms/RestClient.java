@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.database.Cursor;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -129,6 +130,8 @@ public class RestClient {
 			request.setEntity(entity);
 			request.setHeader("Accept", "application/json");
 			request.setHeader("Content-type", "application/json");
+			Log.e(TAG, Base64.encodeToString("sampler:sempl0r".getBytes(), Base64.DEFAULT));
+			request.setHeader("Authorization", "Basic "+Base64.encodeToString("sampler:sempl0r".getBytes(), Base64.DEFAULT));
 		} catch (UnsupportedEncodingException e) {
 			Log.e(getClass().getSimpleName(),
 					"Could not create entity from string: " + json, e);
