@@ -150,11 +150,7 @@ public class RestClient {
 			request.setEntity(entity);
 			request.setHeader("Accept", "application/json");
 			request.setHeader("Content-Type", "application/json");
-			
-			Log.e(TAG, login);
-			Log.e(TAG, "Equal" + login.equals("Basic c2FtcGxlcjpzZW1wbDBy"));
 			request.setHeader("Authorization", login);
-//			request.setHeader("Authorization", "Basic c2FtcGxlcjpzZW1wbDBy");
 			
 			Log.v("DEBUGH", request.getAllHeaders().length+"");
 			for (Header h : request.getAllHeaders()) {
